@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task777 </title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div id="room-selection-screen" class="centered-container">
+        <div class="room-card animate-fade-in">
+            <h1>Task777 <span>Hub</span></h1>
+            <p class="subtitle">บันทึกการบ้านออนไลน์และอัปเดตเรียลไทม์กับเพื่อนด้วยรหัส 4 หลัก</p>
+            
+            <div class="action-zone">
+                <div class="input-group">
+                    <label for="username-input">👤 ชื่อเล่นของคุณ (สำหรับแสดงให้เพื่อนเห็น)</label>
+                    <input type="text" id="username-input" placeholder="กรอกชื่อเล่น เช่น กาย, บีม">
+                </div>
+
+                <div class="divider-line"></div>
+
+                <div class="input-group">
+                    <label for="room-code-input">🔑 เข้าร่วมห้องที่มีอยู่ (ตัวเลข 4 หลัก)</label>
+                    <div class="join-row">
+                        <input type="text" id="room-code-input" maxlength="4" placeholder="เช่น 7777">
+                        <button id="join-room-btn" class="btn-primary-glow">เข้าร่วมห้อง</button>
+                    </div>
+                </div>
+                
+                <div class="divider"><span>หรือ</span></div>
+                
+                <button id="create-room-btn" class="btn-secondary-outline">✨ สุ่มสร้างห้องใหม่ (ตัวเลข 4 หลัก)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-app-screen" class="container hidden">
+        <div class="app-bar">
+            <div class="room-info-display">
+                <span class="pulse-indicator"></span>
+                <p>ห้อง: <strong id="current-room-text">0000</strong></p>
+                <button id="copy-room-btn" class="btn-mini">📋 คัดลอกรหัส</button>
+            </div>
+            
+            <div class="members-online">
+                <span class="member-label">👥 สมาชิกในห้อง:</span>
+                <div id="active-members-list" class="members-chips">
+                    </div>
+            </div>
+
+            <button id="leave-room-btn" class="btn-danger-link">ออกจากห้อง ↩</button>
+        </div>
+
+        <header>
+            <h1>Task777</h1>
+            <p>ทุกคนในห้องช่วยกันเพิ่ม-ลบงานได้ ส่วนปุ่มสถานะแยกกันเป็นส่วนตัวของใครของมัน</p>
+        </header>
+
+        <section class="bento-dashboard">
+            <div class="bento-item stat-box total">
+                <span class="stat-num" id="stat-total">0</span>
+                <span class="stat-tit">การบ้านทั้งหมดในห้อง</span>
+            </div>
+            <div class="bento-item stat-box todo">
+                <span class="stat-num" id="stat-todo">0</span>
+                <span class="stat-tit">คุณต้องทำ (To Do)</span>
+            </div>
+            <div class="bento-item stat-box finished">
+                <span class="stat-num" id="stat-finished">0</span>
+                <span class="stat-tit">คุณเสร็จแล้ว (Finished)</span>
+            </div>
+            <div class="bento-item stat-box submitted">
+                <span class="stat-num" id="stat-submitted">0</span>
+                <span class="stat-tit">คุณส่งครูแล้ว (Submitted)</span>
+            </div>
+        </section>
+
+        <div class="control-panel">
+            <div class="search-bar-wrapper">
+                <input type="text" id="search-input" placeholder="ค้นหาการบ้านด้วยชื่อวิชา หรือหัวข้อ...">
+            </div>
+            
+            <div class="filter-tabs">
+                <button class="tab-btn active" data-filter="all">ทั้งหมด</button>
+                <button class="tab-btn" data-filter="todo">กำลังทำ</button>
+                <button class="tab-btn" data-filter="finished">เสร็จแล้ว</button>
+                <button class="tab-btn" data-filter="submitted">ส่งแล้ว</button>
+            </div>
+
+            <button id="open-modal-btn" class="btn-add-task">+ เพิ่มการบ้านลงห้อง</button>
+        </div>
+
+        <div id="subject-tags-container" class="subject-tags"></div>
+
+        <main class="bento-grid-cards" id="assignments-list"></main>
+    </div>
+
+    <div class="modal-overlay" id="task-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">เพิ่มภารกิจการบ้านใหม่</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                
+                <div class="form-group">
+                    <label>ชื่อวิชา</label>
+                    <input type="text" id="task-subject" required placeholder="เช่น Programming, Calculus">
+                </div>
+
+                <div class="form-group">
+                    <label>หัวข้อการบ้าน</label>
+                    <input type="text" id="task-title" required placeholder="เช่น Exercise 5, ทำรายงานกลุ่ม">
+                </div>
+
+                <div class="form-group">
+                    <label>รายละเอียด / คำสั่งเพิ่มเติม</label>
+                    <textarea id="task-details" rows="3" placeholder="ระบุรายละเอียดงานให้อาจารย์สั่ง..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>กำหนดส่ง (Due Date)</label>
+                    <input type="date" id="task-date" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="close-modal-btn" class="btn-secondary">ยกเลิก</button>
+                    <button type="submit" class="btn-primary-glow" id="save-task-btn">บันทึกข้อมูลเข้าคลาวด์</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
