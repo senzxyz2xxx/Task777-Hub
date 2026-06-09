@@ -2,8 +2,6 @@
    🌸 TASK777 HUB — SOFT PINK MINIMAL EDITION
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Prompt:wght@300;400;500;600&display=swap');
-
 :root {
     --bg:           #faf7f7;
     --surface:      #ffffff;
@@ -492,6 +490,47 @@ header p {
 .btn-add-task:hover {
     transform: translateY(-1px);
     box-shadow: 0 5px 18px rgba(192,112,112,0.32);
+}
+
+/* sort tabs */
+.sort-tabs {
+    display: flex;
+    background: var(--surface-2);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    gap: 2px;
+}
+.sort-btn {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-2);
+    padding: 0.48rem 0.85rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all .15s;
+    font-family: inherit;
+}
+.sort-btn.active {
+    background: var(--surface);
+    color: var(--pink-deep);
+    font-weight: 600;
+    box-shadow: 0 1px 6px rgba(180,120,120,0.12);
+}
+.sort-btn:hover:not(.active) { background: var(--pink-bg); }
+
+/* no-edit label */
+.no-edit-label {
+    font-size: 0.65rem;
+    color: var(--text-3);
+    font-style: italic;
+    line-height: 1.5;
+    padding: 0.3rem 0;
+    flex: 1;
 }
 
 .subject-tags {
