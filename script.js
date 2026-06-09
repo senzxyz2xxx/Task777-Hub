@@ -360,6 +360,13 @@ async function enterRoom(roomId) {
     });
 
     dbMembersUnsubscribe = onSnapshot(collection(db, "rooms", currentRoomId, "members"), (snapshot) => {
+        // ตรวจว่าตัวเองถูก kick (doc ของเราหายออกจาก collection)
+        const memberNames = new Set();
+        snapshot.forEach(d => memberNames.add(d.id));
+        if (!memberNames.has(myUsername) && currentRoomId) {
+            showKickedOverlay();
+            return;
+        }
         renderMemberChips(snapshot);
     });
 }
@@ -429,6 +436,45 @@ window.kickMember = function(targetName) {
     );
 }
 
+// ===== Kicked Overlay =====
+function showKickedOverlay() {
+    // unsubscribe ทันที ป้องกัน loop
+    if (dbTasksUnsubscribe) { dbTasksUnsubscribe(); dbTasksUnsubscribe = null; }
+    if (dbMembersUnsubscribe) { dbMembersUnsubscribe(); dbMembersUnsubscribe = null; }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'kicked-overlay';
+    overlay.innerHTML = `
+        <div class="kicked-box">
+            <div class="kicked-icon">🚫</div>
+            <h2 class="kicked-title">คุณถูก Kick ออกจากห้อง</h2>
+            <p class="kicked-desc">หัวห้องได้นำคุณออกจากห้อง ${currentRoomId} แล้ว</p>
+            <button class="btn-create-room" onclick="dismissKick()" style="margin-top: 1.5rem; max-width: 240px;">กลับหน้าแรก</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.classList.add('show'), 50);
+}
+
+window.dismissKick = function() {
+    const overlay = document.getElementById('kicked-overlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    }
+    // reset state และกลับหน้าแรก
+    localStorage.removeItem('task777_last_room');
+    currentRoomId = "";
+    roomOwner = "";
+    dueSoonNotified = false;
+    assignments = [];
+    localStatuses = {};
+    mainAppScreen.classList.add('hidden');
+    roomSelectionScreen.classList.remove('hidden');
+    document.querySelectorAll('.code-box').forEach(b => b.value = '');
+    roomCodeInput.value = '';
+}
+
 // ===== Leave Room =====
 async function leaveRoom() {
     try { await deleteDoc(doc(db, "rooms", currentRoomId, "members", myUsername)); } catch (e) {}
@@ -452,9 +498,15 @@ function copyRoomCode() {
 }
 
 // ===== Due date =====
+function parseDateLocal(dateString) {
+    // "YYYY-MM-DD" → parse as local time ป้องกัน UTC offset ทำให้วันเลื่อน
+    const [y, m, d] = dateString.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+
 function calculateDueInfo(dateString) {
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    const due = new Date(dateString); due.setHours(0, 0, 0, 0);
+    const due = parseDateLocal(dateString);
     const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
     if (diffDays < 0) return { color: "red", text: `⚠️ เกินกำหนด (${Math.abs(diffDays)} วัน)` };
     if (diffDays <= 7) return { color: "orange", text: `⏳ เหลืออีก ${diffDays} วัน` };
@@ -577,12 +629,12 @@ function renderUI() {
     // ===== Sort =====
     filteredTasks.sort((a, b) => {
         if (activeSortOrder === "due") {
-            const da = new Date(a.dueDate || "9999-12-31");
-            const db_ = new Date(b.dueDate || "9999-12-31");
+            const da = a.dueDate ? parseDateLocal(a.dueDate) : new Date("9999-12-31");
+            const db_ = b.dueDate ? parseDateLocal(b.dueDate) : new Date("9999-12-31");
             return da - db_;
         } else {
-            // "added" — เรียงตาม id (timestamp)
-            return Number(a.id) - Number(b.id);
+            // "added" — ใหม่สุดขึ้นก่อน (descending)
+            return Number(b.id) - Number(a.id);
         }
     });
 
