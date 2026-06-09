@@ -24,7 +24,9 @@ let assignments = [];
 let localStatuses = {};
 let activeFilter = "all";
 let activeSubjectFilter = "all";
+let activeSortOrder = "due";      // "due" | "added"
 let isInitialLoad = true;
+let dueSoonNotified = false;      // แจ้งเตือนงานใกล้ deadline แค่ครั้งเดียวต่อ session
 let pendingIntent = null;
 let pendingRoomCode = "";
 
@@ -134,6 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             activeFilter = e.target.getAttribute('data-filter');
+            renderUI();
+        });
+    });
+
+    document.querySelectorAll('.sort-tabs .sort-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.sort-tabs .sort-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            activeSortOrder = e.target.getAttribute('data-sort');
             renderUI();
         });
     });
@@ -342,6 +353,7 @@ async function enterRoom(roomId) {
         }
         assignments = freshList;
         isInitialLoad = false;
+        checkDueSoonNotification();
         renderUI();
     }, () => {
         showBubbleNotification("❌ ข้อผิดพลาดคลาวด์", "โปรดตรวจสอบ Rules ใน Firebase", "danger");
@@ -425,6 +437,7 @@ async function leaveRoom() {
     localStorage.removeItem('task777_last_room');
     currentRoomId = "";
     roomOwner = "";
+    dueSoonNotified = false;
     assignments = [];
     mainAppScreen.classList.add('hidden');
     roomSelectionScreen.classList.remove('hidden');
@@ -512,6 +525,29 @@ window.deleteAssignmentFromServer = function (id) {
 
 window.triggerEditModal = function (id) { openModal('edit', id); }
 
+// ===== Due Soon Notification =====
+function checkDueSoonNotification() {
+    if (dueSoonNotified) return;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const urgent = assignments.filter(task => {
+        const s = localStatuses[task.id] || "todo";
+        if (s === "submitted") return false;
+        const due = new Date(task.dueDate); due.setHours(0, 0, 0, 0);
+        const diff = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+        return diff >= 0 && diff <= 2;
+    });
+    if (urgent.length > 0) {
+        dueSoonNotified = true;
+        setTimeout(() => {
+            showBubbleNotification(
+                `⏰ มีงานด่วน ${urgent.length} ชิ้น!`,
+                urgent.map(t => `• ${t.subject}: ${t.title}`).slice(0, 3).join('\n'),
+                "danger"
+            );
+        }, 800);
+    }
+}
+
 // ===== Render =====
 function renderUI() {
     const searchQuery = searchInput.value.toLowerCase();
@@ -538,10 +574,26 @@ function renderUI() {
             && (activeSubjectFilter === "all" || task.subject === activeSubjectFilter);
     });
 
+    // ===== Sort =====
+    filteredTasks.sort((a, b) => {
+        if (activeSortOrder === "due") {
+            const da = new Date(a.dueDate || "9999-12-31");
+            const db_ = new Date(b.dueDate || "9999-12-31");
+            return da - db_;
+        } else {
+            // "added" — เรียงตาม id (timestamp)
+            return Number(a.id) - Number(b.id);
+        }
+    });
+
+    const isOwner = myUsername === roomOwner;
+
     filteredTasks.forEach(task => {
         const dueInfo = calculateDueInfo(task.dueDate);
         const currentStatus = localStatuses[task.id] || "todo";
         const isTaskCreatorOwner = task.createdBy === roomOwner;
+        // ===== Edit protection: แก้/ลบได้เฉพาะคนสร้าง หรือ owner =====
+        const canEdit = myUsername === task.createdBy || isOwner;
 
         const card = document.createElement('div');
         card.className = `task-card glow-${dueInfo.color}`;
@@ -565,8 +617,8 @@ function renderUI() {
                     <button class="st-btn ${currentStatus === 'submitted' ? 'active' : ''}" onclick="changePersonalStatus('${task.id}', 'submitted')">Submitted</button>
                 </div>
                 <div class="action-row">
-                    <button class="btn-edit" onclick="triggerEditModal('${task.id}')">แก้ไขงาน</button>
-                    <button class="btn-del" onclick="deleteAssignmentFromServer('${task.id}')">ลบ</button>
+                    ${canEdit ? `<button class="btn-edit" onclick="triggerEditModal('${task.id}')">แก้ไขงาน</button>` : `<span class="no-edit-label">เพิ่มโดย ${escapeHTML(task.createdBy || '?')}</span>`}
+                    ${canEdit ? `<button class="btn-del" onclick="deleteAssignmentFromServer('${task.id}')">ลบ</button>` : ''}
                 </div>
             </div>
         `;
