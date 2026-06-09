@@ -3,59 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task777 </title>
+    <title>Task777 Hub</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div id="toast-container" class="toast-container"></div>
 
+    <!-- ===== หน้า 1: กรอกชื่อ + รหัสห้อง ===== -->
     <div id="room-selection-screen" class="centered-container">
-        <div class="room-card animate-fade-in">
-            <h1>Task777 <span>Hub</span></h1>
-            <p class="subtitle">บันทึกการบ้านออนไลน์และอัปเดตเรียลไทม์กับเพื่อนด้วยรหัส 4 หลัก</p>
+        <div class="room-card">
+            <h1>Task777 <span class="badge-hub">Hub</span></h1>
+            <p class="subtitle">Track assignments together in real-time.</p>
             
             <div class="action-zone">
                 <div class="input-group">
-                    <label for="username-input">👤 ชื่อเล่นของคุณ (สำหรับแสดงให้เพื่อนเห็น)</label>
-                    <input type="text" id="username-input" placeholder="กรอกชื่อเล่น เช่น กาย, บีม">
+                    <label for="username-input">👤 ชื่อเล่นของคุณ</label>
+                    <input type="text" id="username-input" placeholder="กรอกชื่อเล่น">
                 </div>
+                <div class="join-zone" style="margin-top: 15px;">
+                    <label>Enter 4-Digit Room Code</label>
+                    <div class="room-code-boxes">
+                        <input type="text" class="code-box" maxlength="1" pattern="\d*" inputmode="numeric">
+                        <input type="text" class="code-box" maxlength="1" pattern="\d*" inputmode="numeric">
+                        <input type="text" class="code-box" maxlength="1" pattern="\d*" inputmode="numeric">
+                        <input type="text" class="code-box" maxlength="1" pattern="\d*" inputmode="numeric">
+                    </div>
+                    <input type="hidden" id="room-code-input" maxlength="4">
 
-                <div class="divider-line"></div>
-
-                <div class="input-group">
-                    <label for="room-code-input">🔑 เข้าร่วมห้องที่มีอยู่ (ตัวเลข 4 หลัก)</label>
-                    <div class="join-row">
-                        <input type="text" id="room-code-input" maxlength="4" placeholder="เช่น 7777">
-                        <button id="join-room-btn" class="btn-primary-glow">เข้าร่วมห้อง</button>
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button id="create-room-btn" class="btn-create-room" style="flex: 1;">＋ Create Room</button>
+                        <button id="join-room-btn" class="btn-join-room" style="flex: 1; margin-top: 0;">Join Room</button>
                     </div>
                 </div>
-                
-                <div class="divider"><span>หรือ</span></div>
-                
-                <button id="create-room-btn" class="btn-secondary-outline">✨ สุ่มสร้างห้องใหม่ (ตัวเลข 4 หลัก)</button>
+            </div>
+
+            <p class="footer-text">Simple. Fast. For students.</p>
+        </div>
+    </div>
+
+    <!-- ===== หน้า 2: Auth Screen ===== -->
+    <div id="auth-screen" class="centered-container hidden">
+        <div class="room-card">
+            <h1 id="auth-title">🔒 Room Verification</h1>
+            <p id="auth-subtitle" class="subtitle">กำลังดำเนินการเข้าสู่ระบบห้อง</p>
+            
+            <div class="action-zone" style="margin-top: 20px;">
+
+                <!-- Flow A: คนสร้างห้องใหม่ -->
+                <div id="auth-create-flow" class="hidden">
+                    <div class="input-group" style="margin-bottom: 20px;">
+                        <label style="margin-bottom: 10px; display: block;">ต้องการล็อกห้องด้วยรหัสผ่านหรือไม่?</label>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" id="btn-choice-nopwd" class="tab-btn active" style="flex: 1; padding: 12px; font-weight: 500;">🔓 ไม่ใช้รหัสผ่าน</button>
+                            <button type="button" id="btn-choice-haspwd" class="tab-btn" style="flex: 1; padding: 12px; font-weight: 500;">🔒 ใช้รหัสผ่าน</button>
+                        </div>
+                    </div>
+                    
+                    <div id="auth-custom-pwd-wrapper" class="input-group hidden" style="margin-bottom: 15px;">
+                        <label for="auth-new-password">🔑 กำหนดรหัสผ่านเข้าห้องของคุณ</label>
+                        <input type="password" id="auth-new-password" placeholder="ตั้งรหัสผ่านเข้าห้อง เช่น 1234">
+                    </div>
+
+                    <button id="auth-confirm-create-btn" class="btn-create-room">Confirm & Create Room</button>
+                </div>
+
+                <!-- Flow B: คนเข้าห้องที่ล็อคอยู่ -->
+                <div id="auth-join-flow" class="hidden">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 3rem; margin-bottom: 8px;">🔐</div>
+                        <p style="color: var(--text-2); font-size: 0.9rem; line-height: 1.65;">ห้องนี้ตั้งรหัสผ่านไว้ กรุณายืนยันก่อนเข้าใช้งาน</p>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label for="auth-input-password">🔑 รหัสผ่านห้อง</label>
+                        <input type="password" id="auth-input-password" placeholder="กรอกรหัสผ่านห้องเพื่อเข้าใช้งาน">
+                    </div>
+                    <button id="auth-confirm-join-btn" class="btn-join-room" style="margin-top: 10px; width: 100%;">Verify & Access Room</button>
+                </div>
+
+                <button type="button" id="auth-back-btn" class="btn-mini" style="background: transparent; border: none; color: #888; text-decoration: underline; margin-top: 20px; cursor: pointer; width: 100%; text-align: center;">
+                    ← ย้อนกลับไปหน้าแรก
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- ===== หน้าหลัก ===== -->
     <div id="main-app-screen" class="container hidden">
         <div class="app-bar">
             <div class="room-info-display">
                 <span class="pulse-indicator"></span>
                 <p>ห้อง: <strong id="current-room-text">0000</strong></p>
+                <!-- ← ใหม่: owner badge -->
+                <span id="owner-badge" class="owner-badge hidden">👑 Owner</span>
                 <button id="copy-room-btn" class="btn-mini">📋 คัดลอกรหัส</button>
             </div>
             
             <div class="members-online">
-                <span class="member-label">👥 สมาชิกในห้อง:</span>
-                <div id="active-members-list" class="members-chips">
-                    </div>
+                <span class="member-label">👥 ออนไลน์:</span>
+                <div id="active-members-list" class="members-chips"></div>
             </div>
 
-            <button id="leave-room-btn" class="btn-danger-link">ออกจากห้อง ↩</button>
+            <button id="leave-room-btn" class="btn-del" style="padding: 0.5rem 0.9rem; font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;">
+                <span>ออกจากห้อง</span> ↩
+            </button>
         </div>
 
         <header>
@@ -64,28 +118,14 @@
         </header>
 
         <section class="bento-dashboard">
-            <div class="bento-item stat-box total">
-                <span class="stat-num" id="stat-total">0</span>
-                <span class="stat-tit">การบ้านทั้งหมดในห้อง</span>
-            </div>
-            <div class="bento-item stat-box todo">
-                <span class="stat-num" id="stat-todo">0</span>
-                <span class="stat-tit">คุณต้องทำ (To Do)</span>
-            </div>
-            <div class="bento-item stat-box finished">
-                <span class="stat-num" id="stat-finished">0</span>
-                <span class="stat-tit">คุณเสร็จแล้ว (Finished)</span>
-            </div>
-            <div class="bento-item stat-box submitted">
-                <span class="stat-num" id="stat-submitted">0</span>
-                <span class="stat-tit">คุณส่งครูแล้ว (Submitted)</span>
-            </div>
+            <div class="bento-item stat-box total"><span class="stat-num" id="stat-total">0</span><span class="stat-tit">การบ้านทั้งหมดในห้อง</span></div>
+            <div class="bento-item stat-box todo"><span class="stat-num" id="stat-todo">0</span><span class="stat-tit">คุณต้องทำ (To Do)</span></div>
+            <div class="bento-item stat-box finished"><span class="stat-num" id="stat-finished">0</span><span class="stat-tit">คุณเสร็จแล้ว (Finished)</span></div>
+            <div class="bento-item stat-box submitted"><span class="stat-num" id="stat-submitted">0</span><span class="stat-tit">คุณส่งครูแล้ว (Submitted)</span></div>
         </section>
 
         <div class="control-panel">
-            <div class="search-bar-wrapper">
-                <input type="text" id="search-input" placeholder="ค้นหาการบ้านด้วยชื่อวิชา หรือหัวข้อ...">
-            </div>
+            <div class="search-bar-wrapper"><input type="text" id="search-input" placeholder="ค้นหาการบ้านด้วยชื่อวิชา หรือหัวข้อ..."></div>
             
             <div class="filter-tabs">
                 <button class="tab-btn active" data-filter="all">ทั้งหมด</button>
@@ -98,39 +138,36 @@
         </div>
 
         <div id="subject-tags-container" class="subject-tags"></div>
-
         <main class="bento-grid-cards" id="assignments-list"></main>
     </div>
 
+    <!-- ===== Modal เพิ่ม/แก้ไขการบ้าน ===== -->
     <div class="modal-overlay" id="task-modal">
         <div class="modal-content">
             <h2 id="modal-title">เพิ่มภารกิจการบ้านใหม่</h2>
             <form id="task-form">
                 <input type="hidden" id="task-id">
                 
-                <div class="form-group">
-                    <label>ชื่อวิชา</label>
-                    <input type="text" id="task-subject" required placeholder="เช่น Programming, Calculus">
-                </div>
-
-                <div class="form-group">
-                    <label>หัวข้อการบ้าน</label>
-                    <input type="text" id="task-title" required placeholder="เช่น Exercise 5, ทำรายงานกลุ่ม">
-                </div>
-
-                <div class="form-group">
-                    <label>รายละเอียด / คำสั่งเพิ่มเติม</label>
-                    <textarea id="task-details" rows="3" placeholder="ระบุรายละเอียดงานให้อาจารย์สั่ง..."></textarea>
-                </div>
-
+                <div class="form-group"><label>ชื่อวิชา</label><input type="text" id="task-subject" required placeholder="เช่น Programming, Calculus"></div>
+                <div class="form-group"><label>หัวข้อการบ้าน</label><input type="text" id="task-title" required placeholder="เช่น Exercise 5, ทำรายงานกลุ่ม"></div>
+                <div class="form-group"><label>รายละเอียด / คำสั่งเพิ่มเติม</label><textarea id="task-details" rows="3" placeholder="ระบุรายละเอียดงานที่คุณครูสั่ง..."></textarea></div>
                 <div class="form-group">
                     <label>กำหนดส่ง (Due Date)</label>
+                    <div class="quick-date-chips">
+                        <button type="button" class="qd-chip" data-days="0">วันนี้</button>
+                        <button type="button" class="qd-chip" data-days="1">พรุ่งนี้</button>
+                        <button type="button" class="qd-chip" data-days="3">+3 วัน</button>
+                        <button type="button" class="qd-chip" data-days="7">สัปดาห์หน้า</button>
+                        <button type="button" class="qd-chip" data-days="14">2 สัปดาห์</button>
+                        <button type="button" class="qd-chip" data-days="30">เดือนหน้า</button>
+                    </div>
                     <input type="date" id="task-date" required>
+                    <div class="due-hint" id="due-hint"></div>
                 </div>
 
                 <div class="modal-actions">
                     <button type="button" id="close-modal-btn" class="btn-secondary">ยกเลิก</button>
-                    <button type="submit" class="btn-primary-glow" id="save-task-btn">บันทึกข้อมูลเข้าคลาวด์</button>
+                    <button type="submit" class="btn-add-task" id="save-task-btn" style="padding: 0.75rem 1.5rem;">บันทึกข้อมูลเข้าคลาวด์</button>
                 </div>
             </form>
         </div>
