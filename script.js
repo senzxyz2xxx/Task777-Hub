@@ -155,7 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const d = new Date();
             d.setHours(0, 0, 0, 0);
             d.setDate(d.getDate() + days);
-            const iso = d.toISOString().split('T')[0];
+            // format เป็น YYYY-MM-DD แบบ local time ป้องกัน UTC offset
+            const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
             document.getElementById('task-date').value = iso;
             document.querySelectorAll('.qd-chip').forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
@@ -166,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('task-date').addEventListener('input', () => {
         const val = document.getElementById('task-date').value;
         document.querySelectorAll('.qd-chip').forEach(c => c.classList.remove('active'));
-        if (val) updateDueHint(new Date(val + 'T00:00:00'));
+        if (val) updateDueHint(parseDateLocal(val));
         else document.getElementById('due-hint').textContent = '';
     });
 
@@ -538,7 +539,7 @@ function openModal(mode, id = null) {
             document.getElementById('task-title').value = task.title;
             document.getElementById('task-details').value = task.details;
             document.getElementById('task-date').value = task.dueDate;
-            if (task.dueDate) updateDueHint(new Date(task.dueDate + 'T00:00:00'));
+            if (task.dueDate) updateDueHint(parseDateLocal(task.dueDate));
         }
     }
     taskModal.classList.add('active');
@@ -584,7 +585,7 @@ function checkDueSoonNotification() {
     const urgent = assignments.filter(task => {
         const s = localStatuses[task.id] || "todo";
         if (s === "submitted") return false;
-        const due = new Date(task.dueDate); due.setHours(0, 0, 0, 0);
+        const due = parseDateLocal(task.dueDate);
         const diff = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
         return diff >= 0 && diff <= 2;
     });
