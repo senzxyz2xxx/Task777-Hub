@@ -933,3 +933,299 @@ header p {
     .room-card { padding: 2.75rem 1.5rem 2.25rem; border-radius: var(--radius-xl); }
     .modal-content { padding: 1.75rem 1.35rem; }
 }
+
+/* ==========================================================================
+   PIN BUTTON & PINNED CARD
+   ========================================================================== */
+.btn-pin {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-3);
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    line-height: 1.5;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all .15s;
+    font-family: inherit;
+}
+.btn-pin:hover {
+    border-color: #f5dfa0;
+    color: #a07820;
+    background: #fffbee;
+}
+.btn-pin.active {
+    background: #fff8e1;
+    border-color: #f5dfa0;
+    color: #a07820;
+    font-weight: 600;
+}
+.pin-badge {
+    font-size: 0.65rem;
+    color: #a07820;
+    background: #fff8e1;
+    border: 1px solid #f5dfa0;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+.pinned-card {
+    background: linear-gradient(160deg, #fffdf5 0%, #ffffff 100%);
+    border-color: #f0dfa0 !important;
+}
+
+/* ==========================================================================
+   COMMENT BUTTON
+   ========================================================================== */
+.btn-comment {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    line-height: 1.5;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all .15s;
+    font-family: inherit;
+}
+.btn-comment:hover {
+    border-color: var(--pink-light);
+    color: var(--pink-deep);
+    background: var(--pink-bg);
+}
+
+/* link button on card */
+.btn-link {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: var(--pink-deep);
+    background: var(--pink-bg);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 0.22rem 0.65rem;
+    text-decoration: none;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 0.65rem;
+    transition: background .15s, border-color .15s;
+}
+.btn-link:hover {
+    background: var(--pink-light);
+    border-color: var(--pink-light);
+    color: var(--pink-deep);
+}
+
+/* ==========================================================================
+   COMMENT BACKDROP
+   ========================================================================== */
+.comment-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(100, 60, 60, 0.18);
+    backdrop-filter: blur(2px);
+    z-index: 1999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s;
+}
+.comment-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ==========================================================================
+   COMMENT PANEL
+   ========================================================================== */
+.comment-panel {
+    position: fixed;
+    top: 0;
+    right: -440px;
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 2000;
+    transition: right 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    box-shadow: -8px 0 40px rgba(160, 100, 100, 0.1);
+}
+.comment-panel.open {
+    right: 0;
+}
+
+.comment-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    gap: 0.75rem;
+    background: var(--surface);
+    flex-shrink: 0;
+}
+.comment-panel-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.45;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.btn-close-panel {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all .15s;
+    font-family: inherit;
+}
+.btn-close-panel:hover {
+    background: var(--pink-bg);
+    border-color: var(--pink-light);
+    color: var(--pink-deep);
+}
+
+/* comment list scroll area */
+.comment-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    scroll-behavior: smooth;
+}
+.comment-list::-webkit-scrollbar { width: 4px; }
+.comment-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.no-comments {
+    text-align: center;
+    color: var(--text-3);
+    font-size: 0.78rem;
+    margin-top: 3rem;
+    line-height: 1.65;
+}
+
+/* individual comment bubbles */
+.comment-item {
+    display: flex;
+    flex-direction: column;
+    max-width: 82%;
+}
+.comment-item.mine {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+.comment-item.theirs {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.comment-author {
+    font-size: 0.62rem;
+    color: var(--text-3);
+    margin-bottom: 0.22rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+.comment-bubble {
+    padding: 0.58rem 0.88rem;
+    border-radius: 14px;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    word-break: break-word;
+    white-space: pre-line;
+}
+.comment-item.mine .comment-bubble {
+    background: linear-gradient(140deg, #d4a0a0, #c07070);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.comment-item.theirs .comment-bubble {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+}
+.comment-time {
+    font-size: 0.58rem;
+    color: var(--text-3);
+    margin-top: 0.22rem;
+    line-height: 1.4;
+}
+
+/* input row at bottom of panel */
+.comment-input-row {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.9rem 1.1rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+.comment-input-row textarea {
+    flex: 1;
+    min-height: 40px;
+    max-height: 110px;
+    resize: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    padding: 0.58rem 0.85rem;
+    line-height: 1.55;
+}
+.btn-send {
+    background: linear-gradient(140deg, #d4a0a0, #c07070);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.58rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    line-height: 1.4;
+    font-family: inherit;
+    flex-shrink: 0;
+    transition: transform .15s, box-shadow .15s;
+}
+.btn-send:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(192, 112, 112, 0.32);
+}
+
+/* ==========================================================================
+   RESPONSIVE — comment panel full width on mobile
+   ========================================================================== */
+@media (max-width: 500px) {
+    .comment-panel {
+        max-width: 100%;
+        right: -105%;
+    }
+}
+.online-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--text-2);
+    margin-bottom: 1.25rem;
+}
