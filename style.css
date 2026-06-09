@@ -855,6 +855,56 @@ header p {
 .btn-del:hover { border-color: var(--red); color: var(--red); }
 
 /* ==========================================================================
+   KICKED OVERLAY
+   ========================================================================== */
+#kicked-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(100, 60, 60, 0.45);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+#kicked-overlay.show { opacity: 1; }
+
+.kicked-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 3rem 2.5rem;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(160, 80, 80, 0.18);
+    transform: translateY(0);
+}
+
+.kicked-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.kicked-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.65rem;
+    line-height: 1.4;
+}
+
+.kicked-desc {
+    font-size: 0.85rem;
+    color: var(--text-2);
+    line-height: 1.7;
+}
+
+/* ==========================================================================
    ANIMATIONS
    ========================================================================== */
 @keyframes pulse {
