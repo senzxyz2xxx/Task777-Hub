@@ -25,6 +25,119 @@
 
 <body>
 
+    <!-- ====================================== -->
+<!-- START: Discord Notification Popup -->
+<!-- ====================================== -->
+
+<div id="discord-popup" class="discord-popup-overlay">
+    <div class="discord-popup">
+
+        <div class="popup-icon">🔔</div>
+
+        <h2>Discord Notifications</h2>
+
+        <p>
+            ระบบแจ้งเตือนผ่าน Discord กำลังอยู่ระหว่างการพัฒนา<br>
+            โปรดอดใจรออีกสักนิด
+        </p>
+
+        <button onclick="closeDiscordPopup()">
+            เข้าใจแล้ว
+        </button>
+
+    </div>
+</div>
+
+<style>
+.discord-popup-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    backdrop-filter:blur(12px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:999999;
+}
+
+.discord-popup{
+    width:min(92%,420px);
+    background:#111827;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:24px;
+    padding:32px;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+    animation:popupShow .25s ease;
+}
+
+.popup-icon{
+    font-size:3rem;
+    margin-bottom:12px;
+}
+
+.discord-popup h2{
+    color:#fff;
+    font-size:1.5rem;
+    margin-bottom:12px;
+}
+
+.discord-popup p{
+    color:#94a3b8;
+    line-height:1.8;
+    margin-bottom:24px;
+}
+
+.discord-popup button{
+    width:100%;
+    border:none;
+    background:#6366f1;
+    color:white;
+    font-weight:600;
+    padding:14px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.discord-popup button:hover{
+    transform:translateY(-2px);
+}
+
+@keyframes popupShow{
+    from{
+        opacity:0;
+        transform:translateY(20px) scale(.95);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+</style>
+
+<script>
+
+/* ====================================== */
+/* START: Discord Popup Functions */
+/* ====================================== */
+
+function closeDiscordPopup(){
+    document.getElementById("discord-popup").style.display = "none";
+}
+
+/* ====================================== */
+/* END: Discord Popup Functions */
+/* ====================================== */
+
+</script>
+
+<!-- ====================================== -->
+<!-- END: Discord Notification Popup -->
+<!-- ====================================== -->
+
+    
+
     <div id="toast-container" class="toast-container"></div>
 
 <!-- ===== หน้า 1: กรอกชื่อ + รหัสห้อง ===== -->
